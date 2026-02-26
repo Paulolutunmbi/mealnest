@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Grace's Kitchen — Lasting Taste</title>
+  <style type="text/tailwindcss">
+    @layer base {
+      * { box-sizing: border-box; }
+      body { font-family: 'Georgia', serif; }
+      h1, h2, h3 { font-family: 'Georgia', serif; }
+    }
+    @layer utilities {
+      .card-lift {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .card-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -10px rgba(180,83,9,0.25);
+      }
+      .float-slow {
+        animation: floatAnim 6s ease-in-out infinite;
+      }
+      .float-med {
+        animation: floatAnim 4.5s ease-in-out infinite;
+        animation-delay: 1.2s;
+      }
+      .float-fast {
+        animation: floatAnim 3.8s ease-in-out infinite;
+        animation-delay: 2.5s;
+      }
+      @keyframes floatAnim {
+        0%, 100% { transform: translateY(0px) rotate(-3deg); }
+        50%       { transform: translateY(-14px) rotate(3deg); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-amber-50 text-stone-800 min-h-screen relative overflow-x-hidden">
+
+  <!-- ═══════════════════════════════════════
+       FLOATING DECORATIVE BACKGROUND ICONS
+  ═══════════════════════════════════════ -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none">
+    <!-- top-left cluster -->
+    <span class="float-slow absolute top-10 left-6 text-5xl opacity-10">🍲</span>
+    <span class="float-fast absolute top-28 left-20 text-3xl opacity-10">🌶️</span>
+    <span class="float-med absolute top-6 left-44 text-2xl opacity-10">🥄</span>
+    <!-- top-right cluster -->
+    <span class="float-med absolute top-14 right-10 text-4xl opacity-10">🫕</span>
+    <span class="float-slow absolute top-32 right-32 text-3xl opacity-10">🥘</span>
+    <span class="float-fast absolute top-4 right-52 text-2xl opacity-10">🍃</span>
+    <!-- mid-left -->
+    <span class="float-slow absolute top-1/3 left-4 text-6xl opacity-[0.07]">🥜</span>
+    <span class="float-fast absolute top-1/2 left-16 text-3xl opacity-10">🌿</span>
+    <!-- mid-right -->
+    <span class="float-med absolute top-1/3 right-6 text-5xl opacity-[0.07]">🍳</span>
+    <span class="float-slow absolute top-1/2 right-20 text-2xl opacity-10">🫙</span>
+    <!-- bottom cluster -->
+    <span class="float-fast absolute bottom-20 left-12 text-4xl opacity-10">🍛</span>
+    <span class="float-slow absolute bottom-32 left-40 text-3xl opacity-10">🥣</span>
+    <span class="float-med absolute bottom-10 right-16 text-5xl opacity-[0.07]">🧅</span>
+    <span class="float-slow absolute bottom-28 right-44 text-3xl opacity-10">🌺</span>
+    <!-- scattered spice dots -->
+    <span class="float-fast absolute top-2/3 left-1/3 text-2xl opacity-10">✦</span>
+    <span class="float-med absolute top-3/4 right-1/3 text-xl opacity-10">✦</span>
+    <span class="float-slow absolute top-1/4 left-1/2 text-lg opacity-10">✦</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STICKY SITE HEADER
+  ═══════════════════════════════════════ -->
+  <header id="site-header" class="sticky top-0 z-50 shadow-lg">
+
+    <!-- Brand bar -->
+    <div class="bg-gradient-to-r from-amber-900 via-orange-800 to-amber-800 text-amber-50 px-4 py-4 md:px-8">
+      <div class="max-w-7xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+        <!-- Logo + motto -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center text-2xl shadow-md ring-2 ring-amber-300/50 shrink-0">
+            🍲
+          </div>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight leading-tight">
+              Grace's Kitchen
+            </h1>
+            <p class="text-xs md:text-sm text-amber-300 italic tracking-widest">✦ Lasting Taste ✦</p>
+          </div>
+        </div>
+
+        <!-- Search + Favorites -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <!-- Search bar -->
+          <div class="relative flex-1 sm:w-72 md:w-96">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-sm pointer-events-none">🔍</span>
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search dishes, e.g. Jollof…"
+              data-section="search"
+              class="w-full pl-9 pr-4 py-2.5 rounded-full bg-white/15 border border-amber-300/30 placeholder-amber-200/70 text-amber-50 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/25 transition"
+            />
+          </div>
+          <!-- Favorites toggle button -->
+          <button
+            id="favorites-toggle-btn"
+            data-action="toggle-favorites"
+            aria-label="View favourites"
+            class="flex items-center gap-1.5 shrink-0 bg-amber-400 hover:bg-amber-300 text-amber-900 font-semibold text-sm px-4 py-2.5 rounded-full shadow transition-colors"
+          >
+            <span class="text-base">❤️</span>
+            <span class="hidden sm:inline">Favourites</span>
+            <span id="favorites-count" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-orange-900 text-amber-50 text-xs font-bold">0</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div id="filter-bar" data-section="filters" class="bg-white border-b border-stone-200 shadow-sm px-4 py-3 md:px-8">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
+
+        <!-- Category dropdown -->
+        <div class="flex items-center gap-1.5">
+          <label for="filter-category" class="text-xs font-semibold text-stone-500 uppercase tracking-wider whitespace-nowrap">Category</label>
+          <select
+            id="filter-category"
+            data-filter="category"
+            class="text-sm border border-stone-200 bg-amber-50 text-stone-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+          >
+            <option value="">All</option>
+            <option value="soups">Soups</option>
+            <option value="rice">Rice Dishes</option>
+            <option value="swallows">Swallows</option>
+            <option value="snacks">Snacks</option>
+            <option value="grills">Grills</option>
+            <option value="drinks">Drinks</option>
+          </select>
+        </div>
+
+        <!-- Divider -->
+        <span class="hidden sm:block h-5 w-px bg-stone-200"></span>
+
+        <!-- Region dropdown -->
+        <div class="flex items-center gap-1.5">
+          <label for="filter-region" class="text-xs font-semibold text-stone-500 uppercase tracking-wider whitespace-nowrap">Region</label>
+          <select
+            id="filter-region"
+            data-filter="region"
+            class="text-sm border border-stone-200 bg-amber-50 text-stone-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+          >
+            <option value="">All Regions</option>
+            <option value="southwest">South West (Yoruba)</option>
+            <option value="southeast">South East (Igbo)</option>
+            <option value="southsouth">South South</option>
+            <option value="north">Northern Nigeria</option>
+            <option value="nationwide">Nationwide</option>
+          </select>
+        </div>
+
+        <!-- Divider -->
+        <span class="hidden sm:block h-5 w-px bg-stone-200"></span>
+
+        <!-- Checkboxes -->
+        <div class="flex items-center gap-4">
+          <label class="flex items-center gap-1.5 cursor-pointer group">
+            <input
+              id="filter-vegetarian"
+              type="checkbox"
+              data-filter="vegetarian"
+              class="w-4 h-4 accent-green-600 rounded cursor-pointer"
+            />
+            <span class="text-sm font-medium text-stone-600 group-hover:text-green-700 transition-colors">🌿 Vegetarian</span>
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer group">
+            <input
+              id="filter-spicy"
+              type="checkbox"
+              data-filter="spicy"
+              class="w-4 h-4 accent-red-600 rounded cursor-pointer"
+            />
+            <span class="text-sm font-medium text-stone-600 group-hover:text-red-600 transition-colors">🌶️ Spicy</span>
+          </label>
+        </div>
+
+        <!-- Spacer -->
+        <span class="flex-1"></span>
+
+        <!-- Clear filters -->
+        <button
+          id="clear-filters-btn"
+          data-action="clear-filters"
+          class="flex items-center gap-1 text-xs font-semibold text-orange-700 border border-orange-300 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-full transition-colors"
+        >
+          ✕ Clear Filters
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════
+       MAIN CONTENT WRAPPER
+  ═══════════════════════════════════════ -->
+  <main class="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-8">
+
+    <!-- ─────────────────────────────────────
+         FOOD GRID SECTION
+    ───────────────────────────────────── -->
+    <section id="food-grid-section" data-section="food-grid" aria-label="Dishes">
+
+      <!-- Section heading -->
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-amber-900">Our Dishes</h2>
+          <p class="text-sm text-stone-500 mt-0.5">Handcrafted with love, straight from Nigerian kitchens</p>
+        </div>
+        <span id="results-count" class="text-sm font-medium text-stone-400 hidden sm:block">Showing 12 dishes</span>
+      </div>
+
+      <!-- ── Food Grid ── -->
+      <div
+        id="food-grid"
+        data-section="cards-container"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6"
+      >
+
+        <!-- ── CARD 1: Jollof Rice ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="1"
+          data-category="rice"
+          data-region="nationwide"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <!-- Image placeholder -->
+          <div class="relative h-44 bg-gradient-to-br from-orange-300 via-amber-400 to-orange-500 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍚</span>
+            <!-- badges -->
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="1" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">
+                ♡
+              </button>
+            </div>
+          </div>
+          <!-- Info -->
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Party Jollof Rice</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Smoky, party-style Jollof rice cooked over firewood with tomato-pepper base and rich spices.</p>
+            <!-- Meta row -->
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>45 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>520 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>Nationwide</span></span>
+            </div>
+            <!-- Price + CTA -->
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦2,500</span>
+              <button data-action="view-details" data-dish-id="1" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">
+                View →
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 2: Egusi Soup ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="2"
+          data-category="soups"
+          data-region="nationwide"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-yellow-400 via-lime-400 to-green-500 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🥘</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="2" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Egusi Soup</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Thick melon-seed soup simmered with palm oil, assorted meat, stockfish and leafy vegetables.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>60 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>680 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>Nationwide</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦3,200</span>
+              <button data-action="view-details" data-dish-id="2" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 3: Suya ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="3"
+          data-category="grills"
+          data-region="north"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-red-400 via-orange-500 to-amber-600 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍢</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="3" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Northern Suya</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Thin-sliced, skewered beef marinated in groundnut-based yaji spice mix and grilled over open flame.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>30 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>390 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>North</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦1,800</span>
+              <button data-action="view-details" data-dish-id="3" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 4: Akara ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="4"
+          data-category="snacks"
+          data-region="southwest"
+          data-vegetarian="true"
+          data-spicy="false"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-amber-300 via-yellow-400 to-orange-300 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🧆</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌿 Veg</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="4" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Akara (Bean Cakes)</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Crispy deep-fried black-eyed pea fritters, seasoned with onion and peppers — a perfect breakfast.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>25 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>280 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>South West</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦900</span>
+              <button data-action="view-details" data-dish-id="4" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 5: Pounded Yam & Egusi ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="5"
+          data-category="swallows"
+          data-region="southwest"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-stone-200 via-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🫓</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="5" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Pounded Yam & Egusi</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Silky smooth pounded yam served with hearty egusi soup — the quintessential Nigerian comfort meal.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>75 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>860 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>South West</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦4,500</span>
+              <button data-action="view-details" data-dish-id="5" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 6: Afang Soup ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="6"
+          data-category="soups"
+          data-region="southsouth"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🫕</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="6" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Afang Soup</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">A rich, aromatic delicacy from Cross River/Akwa Ibom made with afang leaves, water leaves, and assorted seafood.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>55 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>610 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>South South</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦3,800</span>
+              <button data-action="view-details" data-dish-id="6" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 7: Moi Moi ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="7"
+          data-category="snacks"
+          data-region="nationwide"
+          data-vegetarian="true"
+          data-spicy="false"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-orange-200 via-amber-300 to-yellow-300 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🫔</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌿 Veg</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="7" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Moi Moi</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Steamed bean pudding blended with peppers, onions, and seasonings — soft, savoury, and satisfying.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>50 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>320 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>Nationwide</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦1,200</span>
+              <button data-action="view-details" data-dish-id="7" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 8: Pepper Soup ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="8"
+          data-category="soups"
+          data-region="nationwide"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-red-500 via-rose-500 to-orange-600 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍵</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️🌶️ Very Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="8" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Catfish Pepper Soup</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">A fiery, medicinal broth packed with fresh catfish, uziza seeds, and an aromatic blend of pepper soup spices.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>35 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>290 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>Nationwide</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦2,800</span>
+              <button data-action="view-details" data-dish-id="8" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 9: Ofada Rice ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="9"
+          data-category="rice"
+          data-region="southwest"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-lime-400 via-green-400 to-emerald-500 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍱</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="9" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Ofada Rice & Ayamase</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Unpolished local rice served with Ayamase — a distinctive green pepper stew with assorted offal and palm oil.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>65 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>740 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>South West</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦3,500</span>
+              <button data-action="view-details" data-dish-id="9" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 10: Fried Plantain (Dodo) ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="10"
+          data-category="snacks"
+          data-region="nationwide"
+          data-vegetarian="true"
+          data-spicy="false"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍌</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌿 Veg</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="10" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Dodo (Fried Plantain)</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Golden, caramelised ripe plantain slices — sweet, tender, and perfectly crisp at the edges. A national side.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>15 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>210 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>Nationwide</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦700</span>
+              <button data-action="view-details" data-dish-id="10" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 11: Banga Soup ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="11"
+          data-category="soups"
+          data-region="southsouth"
+          data-vegetarian="false"
+          data-spicy="true"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🥥</span>
+            <div class="absolute top-2 left-2 flex gap-1">
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">🌶️ Spicy</span>
+            </div>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="11" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Banga (Palm Nut) Soup</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Slow-cooked palm nut soup from the Niger Delta, enriched with dried fish, beletete leaves, and oburunbebe stick.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>80 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>720 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>South South</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦4,000</span>
+              <button data-action="view-details" data-dish-id="11" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── CARD 12: Tuwo Shinkafa ── -->
+        <article
+          class="card-lift group bg-white rounded-2xl overflow-hidden shadow-md border border-amber-100 cursor-pointer"
+          data-card="dish"
+          data-id="12"
+          data-category="swallows"
+          data-region="north"
+          data-vegetarian="false"
+          data-spicy="false"
+        >
+          <div class="relative h-44 bg-gradient-to-br from-stone-300 via-amber-100 to-stone-200 flex items-center justify-center overflow-hidden">
+            <span class="text-7xl group-hover:scale-110 transition-transform duration-300">🍚</span>
+            <div class="absolute top-2 right-2">
+              <button data-action="favorite" data-dish-id="12" aria-label="Add to favourites" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors shadow">♡</button>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg text-stone-800 leading-tight">Tuwo Shinkafa</h3>
+            <p class="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">Smooth moulded rice swallow from Northern Nigeria, traditionally served with miyan kuka or groundnut soup.</p>
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+              <span class="flex items-center gap-0.5">⏱ <span>40 min</span></span>
+              <span class="flex items-center gap-0.5">🔥 <span>490 kcal</span></span>
+              <span class="flex items-center gap-0.5">📍 <span>North</span></span>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+              <span class="text-xl font-extrabold text-orange-600">₦2,200</span>
+              <button data-action="view-details" data-dish-id="12" class="text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full transition-colors">View →</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+      <!-- ── End Food Grid ── -->
+
+    </section>
+    <!-- ── End Food Grid Section ── -->
+
+
+    <!-- ─────────────────────────────────────
+         FAVOURITES SECTION (hidden by default)
+    ───────────────────────────────────── -->
+    <section
+      id="favorites-section"
+      data-section="favorites"
+      aria-label="Favourite dishes"
+      class="hidden mt-10"
+    >
+      <!-- Section heading -->
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-amber-900">❤️ Your Favourites</h2>
+          <p class="text-sm text-stone-500 mt-0.5">Dishes you've saved for later</p>
+        </div>
+        <button
+          id="favorites-back-btn"
+          data-action="back-to-grid"
+          class="text-sm font-semibold text-orange-700 border border-orange-300 bg-orange-50 hover:bg-orange-100 px-4 py-2 rounded-full transition-colors"
+        >
+          ← Back to All Dishes
+        </button>
+      </div>
+
+      <!-- Favourites grid — same responsive layout as main grid -->
+      <div
+        id="favorites-grid"
+        data-section="favorites-cards-container"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6"
+      >
+        <!-- Favourite cards will be injected here by JS -->
+        <!-- Empty state (shown when no favourites) -->
+        <div
+          id="favorites-empty-state"
+          data-state="empty"
+          class="col-span-full flex flex-col items-center justify-center py-24 text-center"
+        >
+          <span class="text-7xl mb-4 opacity-30">💔</span>
+          <p class="text-xl font-semibold text-stone-400">No favourites yet</p>
+          <p class="text-sm text-stone-400 mt-1">Tap the ♡ on any dish to save it here.</p>
+        </div>
+      </div>
+
+    </section>
+    <!-- ── End Favourites Section ── -->
+
+  </main>
+
+
+  <!-- ═══════════════════════════════════════
+       DETAIL MODAL (hidden initially)
+  ═══════════════════════════════════════ -->
+  <div
+    id="detail-modal-overlay"
+    data-section="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-dish-name"
+    class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-stone-900/70 backdrop-blur-sm"
+  >
+    <div
+      id="detail-modal"
+      data-section="modal-card"
+      class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+    >
+
+      <!-- Modal image header -->
+      <div
+        id="modal-image-area"
+        data-modal="image"
+        class="relative h-52 md:h-64 bg-gradient-to-br from-orange-300 via-amber-400 to-orange-500 flex items-center justify-center shrink-0"
+      >
+        <span id="modal-emoji" data-modal="emoji" class="text-9xl">🍲</span>
+        <!-- badge row -->
+        <div id="modal-badges" data-modal="badges" class="absolute top-4 left-4 flex gap-2">
+          <!-- badges injected by JS -->
+        </div>
+        <!-- Close button -->
+        <button
+          id="modal-close-btn"
+          data-action="close-modal"
+          aria-label="Close"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center text-stone-600 hover:text-stone-900 font-bold text-lg shadow transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal body — scrollable -->
+      <div class="overflow-y-auto flex-1 p-6 md:p-8">
+
+        <!-- Dish name + price -->
+        <div class="flex items-start justify-between gap-4">
+          <h2 id="modal-dish-name" data-modal="name" class="text-2xl md:text-3xl font-bold text-stone-800 leading-tight">
+            Dish Name
+          </h2>
+          <span id="modal-price" data-modal="price" class="text-2xl font-extrabold text-orange-600 shrink-0">
+            ₦0
+          </span>
+        </div>
+
+        <!-- Region pill -->
+        <div class="mt-2">
+          <span id="modal-region" data-modal="region" class="inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">📍 Region</span>
+        </div>
+
+        <!-- Description -->
+        <p id="modal-description" data-modal="description" class="mt-4 text-stone-600 leading-relaxed text-sm md:text-base">
+          Full dish description will appear here.
+        </p>
+
+        <!-- Stats strip -->
+        <div class="mt-6 grid grid-cols-3 gap-3">
+          <div class="bg-amber-50 rounded-2xl p-3 text-center border border-amber-100">
+            <span class="block text-2xl">⏱</span>
+            <span id="modal-prep-time" data-modal="prep-time" class="block text-lg font-bold text-stone-800 mt-0.5">— min</span>
+            <span class="block text-xs text-stone-400">Prep Time</span>
+          </div>
+          <div class="bg-orange-50 rounded-2xl p-3 text-center border border-orange-100">
+            <span class="block text-2xl">🔥</span>
+            <span id="modal-calories" data-modal="calories" class="block text-lg font-bold text-stone-800 mt-0.5">— kcal</span>
+            <span class="block text-xs text-stone-400">Calories</span>
+          </div>
+          <div class="bg-green-50 rounded-2xl p-3 text-center border border-green-100">
+            <span class="block text-2xl">🍽️</span>
+            <span id="modal-servings" data-modal="servings" class="block text-lg font-bold text-stone-800 mt-0.5">1–2</span>
+            <span class="block text-xs text-stone-400">Servings</span>
+          </div>
+        </div>
+
+        <!-- Ingredients placeholder -->
+        <div class="mt-6">
+          <h3 class="font-bold text-stone-700 mb-2 text-sm uppercase tracking-widest">Key Ingredients</h3>
+          <div id="modal-ingredients" data-modal="ingredients" class="flex flex-wrap gap-2">
+            <!-- ingredient chips injected by JS -->
+            <span class="bg-stone-100 text-stone-600 text-xs px-3 py-1 rounded-full">Ingredients load here…</span>
+          </div>
+        </div>
+
+        <!-- CTA row -->
+        <div class="mt-8 flex items-center gap-3">
+          <button
+            id="modal-order-btn"
+            data-action="order"
+            data-dish-id=""
+            class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-2xl text-sm transition-colors shadow-lg shadow-orange-200"
+          >
+            🛒 Add to Order
+          </button>
+          <button
+            id="modal-favorite-btn"
+            data-action="modal-favorite"
+            data-dish-id=""
+            class="w-12 h-12 rounded-2xl border-2 border-red-200 hover:border-red-400 bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600 text-xl transition-colors"
+            aria-label="Toggle favourite"
+          >
+            ♡
+          </button>
+        </div>
+
+      </div>
+      <!-- ── end modal body ── -->
+
+    </div>
+  </div>
+  <!-- ── End Detail Modal ── -->
+
+
+  <!-- ═══════════════════════════════════════
+       SITE FOOTER
+  ═══════════════════════════════════════ -->
+  <footer class="relative z-10 mt-20 border-t border-amber-200 bg-amber-900 text-amber-100">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
+
+      <!-- Brand column -->
+      <div class="sm:col-span-1">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-xl shadow">🍲</div>
+          <div>
+            <p class="font-bold text-amber-50 text-lg leading-tight">Grace's Kitchen</p>
+            <p class="text-xs text-amber-400 italic">✦ Lasting Taste ✦</p>
+          </div>
+        </div>
+        <p class="text-sm text-amber-300 leading-relaxed mt-2">Celebrating the rich, vibrant flavours of Nigerian cuisine — one plate at a time.</p>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <h4 class="font-semibold text-amber-200 text-sm uppercase tracking-widest mb-3">Explore</h4>
+        <ul class="space-y-2 text-sm text-amber-300">
+          <li><a href="#food-grid-section" class="hover:text-amber-100 transition-colors">All Dishes</a></li>
+          <li><a href="#favorites-section" class="hover:text-amber-100 transition-colors">Favourites</a></li>
+          <li><a href="#filter-bar" class="hover:text-amber-100 transition-colors">Filter by Region</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact / social placeholder -->
+      <div>
+        <h4 class="font-semibold text-amber-200 text-sm uppercase tracking-widest mb-3">Connect</h4>
+        <ul class="space-y-2 text-sm text-amber-300">
+          <li>📍 Lagos, Nigeria</li>
+          <li>📞 +234 800 000 0000</li>
+          <li>✉️ hello@graceskitchen.ng</li>
+        </ul>
+        <!-- Social icons row -->
+        <div class="flex gap-3 mt-4 text-amber-400">
+          <a href="#" aria-label="Instagram" class="w-8 h-8 rounded-full bg-amber-800 hover:bg-amber-700 flex items-center justify-center transition-colors">📷</a>
+          <a href="#" aria-label="Twitter / X" class="w-8 h-8 rounded-full bg-amber-800 hover:bg-amber-700 flex items-center justify-center transition-colors">🐦</a>
+          <a href="#" aria-label="WhatsApp" class="w-8 h-8 rounded-full bg-amber-800 hover:bg-amber-700 flex items-center justify-center transition-colors">💬</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-amber-800 px-4 md:px-8 py-4 text-center text-xs text-amber-500">
+      © 2026 Grace's Kitchen. All rights reserved. · Made with ❤️ &amp; 🌶️ in Nigeria.
+    </div>
+  </footer>
+
+</body>
+</html>
