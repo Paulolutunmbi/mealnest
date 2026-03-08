@@ -43,25 +43,36 @@ async function fetchFoods() {
 // Render food cards
 function renderFoods(foods) {
   grid.innerHTML = "";
+
   if (foods.length === 0) {
     grid.innerHTML = "<p class='text-center col-span-3'>No foods found.</p>";
     return;
   }
 
-  foods.forEach(food => {
-    const card = `
-      <div class="bg-white shadow-md rounded-xl p-4 hover:shadow-xl transition">
-        <h2 class="text-xl font-bold mb-2">${food.name}</h2>
-        <p class="text-gray-600 text-sm mb-2">${food.description}</p>
-        <p class="text-sm">Calories: ${food.calories}</p>
-        <p class="text-sm">Prep Time: ${food.preparationTime} mins</p>
-        <p class="text-sm font-semibold">Price: ₦${food.price}</p>
-      </div>
-    `;
-    grid.innerHTML += card;
-  });
-}
+foods.forEach(food => {
+  const vegIcon = food.isVegetarian ? "🌱 Vegetarian" : "";
+  const spicyIcon = food.isSpicy ? "🌶 Spicy" : "";
 
+  const card = document.createElement("div");
+  card.className = "bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition cursor-pointer";
+
+  card.innerHTML = `
+    <div class="bg-gray-200 h-40 flex items-center justify-center text-gray-500">Food Image</div>
+    <div class="p-4">
+      <h2 class="text-xl font-bold mb-2">${food.name}</h2>
+      <p class="text-gray-600 text-sm mb-3">${food.description}</p>
+      <div class="flex gap-3 text-sm mb-3">${vegIcon} ${spicyIcon}</div>
+      <p class="text-sm">Calories: ${food.calories}</p>
+      <p class="text-sm">Prep Time: ${food.preparationTime} mins</p>
+      <p class="text-sm font-semibold mt-2">Price: ₦${food.price}</p>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openModal(food));
+
+  grid.appendChild(card);
+});
+}
 // Populate category & region filters dynamically
 function populateFilters() {
   const categories = [...new Set(allFoods.map(f => f.category))];
@@ -119,3 +130,34 @@ clearFilters.addEventListener("click", () => {
 
 // Initial load
 fetchFoods();
+const foodModal = document.getElementById("foodModal");
+const modalContent = document.getElementById("modalContent");
+const closeModal = document.getElementById("closeModal");
+
+// Function to open modal with food details
+function openModal(food) {
+  modalContent.innerHTML = `
+    <h2 class="text-2xl font-bold">${food.name}</h2>
+    <p class="text-gray-600 mb-2">${food.description}</p>
+    <div class="flex gap-3 mb-2">
+      ${food.isVegetarian ? "🌱 Vegetarian" : ""}
+      ${food.isSpicy ? "🌶 Spicy" : ""}
+    </div>
+    <p class="text-sm">Calories: ${food.calories}</p>
+    <p class="text-sm">Prep Time: ${food.preparationTime} mins</p>
+    <p class="text-sm">Difficulty: ${food.difficulty || "N/A"}</p>
+    <p class="text-sm mb-3">Serving Size: ${food.servingSize || "N/A"}</p>
+    <button id="addFavorite" class="bg-orange-600 text-white px-4 py-2 rounded">Add to Favorites</button>
+  `;
+  foodModal.classList.remove("hidden");
+
+  // Favorite button logic
+  const addFavorite = document.getElementById("addFavorite");
+  addFavorite.onclick = () => addToFavorites(food);
+}
+
+// Close modal
+closeModal.addEventListener("click", () => foodModal.classList.add("hidden"));
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") foodModal.classList.add("hidden");
+});
