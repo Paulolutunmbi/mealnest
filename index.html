@@ -1,57 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grace's Kitchen</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grace's Kitchen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Header -->
+    <header class="p-6 bg-orange-600 text-white text-center">
+      <h1 class="text-3xl font-bold">Grace's Kitchen</h1>
+      <p class="text-sm">Lasting Taste</p>
+    </header>
 
-  <!-- Header -->
-  <header class="p-6 bg-orange-600 text-white text-center">
-    <h1 class="text-3xl font-bold">Grace's Kitchen</h1>
-    <p class="text-sm">Lasting Taste</p>
-  </header>
-
-  <!-- Loader -->
-  <div id="loader" class="text-center py-10 hidden">
-    <p class="animate-pulse text-orange-600">Loading foods...</p>
-  </div>
-
-  <!-- Filters & Search -->
-  <main class="p-6">
-    <div class="flex flex-wrap gap-4 mb-6">
-      <input id="searchInput" type="text" placeholder="Search foods..."
-        class="border p-2 flex-1 min-w-[150px]">
-
-      <select id="categoryFilter" class="border p-2">
-        <option value="">All Categories</option>
-      </select>
-
-      <select id="regionFilter" class="border p-2">
-        <option value="">All Regions</option>
-      </select>
-
-      <label><input type="checkbox" id="vegFilter"> Vegetarian</label>
-      <label><input type="checkbox" id="spicyFilter"> Spicy</label>
-
-      <button id="clearFilters" class="bg-gray-300 px-3 py-1 rounded">Clear Filters</button>
+    <!-- Loader -->
+    <div id="loader" class="text-center py-10 hidden">
+      <p class="animate-pulse text-orange-600">Loading foods...</p>
     </div>
 
-    <!-- Grid -->
-    <div id="foodsGrid" class="grid md:grid-cols-3 gap-6"></div>
-  </main>
-  <!-- Food Detail Modal -->
-<div id="foodModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-xl w-11/12 max-w-lg p-6 relative">
-    <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
-    
-    <div id="modalContent" class="space-y-3">
-      <!-- Dynamic content goes here -->
+    <!-- Filters & Search -->
+    <main class="p-6">
+      <div class="flex flex-wrap gap-4 mb-6">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search foods..."
+          class="border p-2 flex-1 min-w-[150px]"
+        />
+
+        <select id="categoryFilter" class="border p-2">
+          <option value="">All Categories</option>
+        </select>
+
+        <select id="regionFilter" class="border p-2">
+          <option value="">All Regions</option>
+        </select>
+
+        <label><input type="checkbox" id="vegFilter" /> Vegetarian</label>
+        <label><input type="checkbox" id="spicyFilter" /> Spicy</label>
+
+        <button id="clearFilters" class="bg-gray-300 px-3 py-1 rounded">
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Grid -->
+      <div id="foodsGrid" class="grid md:grid-cols-3 gap-6"></div>
+    </main>
+    <!-- Food Detail Modal -->
+    <div
+      id="foodModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-xl w-11/12 max-w-lg p-6 relative">
+        <button
+          id="closeModal"
+          class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+        >
+          &times;
+        </button>
+
+        <div id="modalContent" class="space-y-3">
+          <!-- Dynamic content goes here -->
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
