@@ -8,7 +8,11 @@ The project is designed as a clean front-end portfolio app built with HTML, Tail
 
 - Browse Nigerian dishes in a responsive card layout
 - Fetch food data from an external REST API
-- Search meals by name or description
+- Search meals by name or description with:
+  - Auto-trimming of leading/trailing spaces
+  - Punctuation-insensitive matching
+  - Case-insensitive matching
+  - Debounced input (300ms) for smoother performance
 - Filter meals by:
   - Category
   - Region
@@ -19,6 +23,7 @@ The project is designed as a clean front-end portfolio app built with HTML, Tail
 - View ingredients, region, category, and calories in the modal
 - Toast notifications for favorite actions
 - Smooth UI animations and hover interactions
+- Fully responsive design for mobile, tablet, and desktop
 
 ## Technologies Used
 

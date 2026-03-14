@@ -162,6 +162,15 @@ function openModal(food){
 closeModal.addEventListener("click", ()=>{ modal.classList.add("hidden"); });
 document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") modal.classList.add("hidden"); });
 
+
+
+function debounce(func, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
+}
 // FILTERS
 function applyFilters(){
   let filtered = [...allFoods];
@@ -172,13 +181,28 @@ function applyFilters(){
   if(vegFilter.checked) filtered = filtered.filter(f=>f.isVegetarian);
   if(spicyFilter.checked) filtered = filtered.filter(f=>f.isSpicy);
 
-  const searchValue = searchInput.value.toLowerCase();
-  if(searchValue){
-    filtered = filtered.filter(f=>
-      f.name.toLowerCase().includes(searchValue) ||
-      f.description.toLowerCase().includes(searchValue)
-    );
-  }
+  // Normalize text: lowercase, remove extra spaces and punctuation
+function normalizeText(text){
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g,"") // remove punctuation
+    .replace(/\s+/g," ");   // convert multiple spaces to single
+}
+
+const searchValue = normalizeText(searchInput.value);
+
+if(searchValue){
+  const searchWords = searchValue.split(" "); // split input into words
+
+  filtered = filtered.filter(food => {
+    // normalize food name + description
+    const text = normalizeText(food.name + " " + food.description);
+
+    // check if every word in input exists somewhere in text
+    return searchWords.every(word => text.includes(word));
+  });
+}
 
   renderFoods(filtered);
 }
@@ -188,7 +212,7 @@ categoryFilter.addEventListener("change", applyFilters);
 regionFilter.addEventListener("change", applyFilters);
 vegFilter.addEventListener("change", applyFilters);
 spicyFilter.addEventListener("change", applyFilters);
-searchInput.addEventListener("input", applyFilters);
+searchInput.addEventListener("input", debounce(applyFilters, 300));
 
 // FAVORITES BUTTON
 favoritesBtn.addEventListener("click", ()=>{
